@@ -14,7 +14,8 @@ const ProductsSection = () => {
         .from('products')
         .select('*')
         .eq('status', 'active')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .limit(3); // Batasi hanya 3 produk
 
       if (error) {
         console.error('Error fetching products:', error);

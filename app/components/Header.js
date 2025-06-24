@@ -2,9 +2,10 @@
 // Komponen ini sekarang menggunakan AuthContext untuk mendapatkan status login
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { Menu, X, User, LogOut, Settings, Sun, Moon } from "lucide-react";
+import { Menu, X, User, LogOut, Settings, Sun, Moon, ShoppingCart } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 // --- Perubahan Kunci (Langkah 1) ---
 // Hapus import dari 'next-auth/react'
@@ -14,10 +15,74 @@ import { supabase } from "@/lib/supabaseClient";
 
 const Header = ({ isDarkMode, toggleDarkMode }) => {
   const [menuOpen, setMenuOpen] = useState(false);
-
-  // --- Perubahan Kunci (Langkah 2) ---
-  // Ganti useSession dengan useAuth untuk mendapatkan data dari Supabase
   const { session, user } = useAuth();
+  const pathname = usePathname();
+  const [cartCount, setCartCount] = useState(0);
+  const cartIdRef = useRef(null);
+
+  // Fetch cartId & count awal
+  useEffect(() => {
+    const fetchCartCount = async () => {
+      if (!session) {
+        setCartCount(0);
+        cartIdRef.current = null;
+        return;
+      }
+      const { data: cart } = await supabase
+        .from('carts')
+        .select('id')
+        .eq('user_id', session.user.id)
+        .single();
+      if (!cart) {
+        setCartCount(0);
+        cartIdRef.current = null;
+        return;
+      }
+      cartIdRef.current = cart.id;
+      const { count } = await supabase
+        .from('cart_items')
+        .select('id', { count: 'exact', head: true })
+        .eq('cart_id', cart.id);
+      setCartCount(count || 0);
+    };
+    fetchCartCount();
+  }, [session]);
+
+  // Realtime subscription
+  useEffect(() => {
+    if (!cartIdRef.current) return;
+
+    const channel = supabase
+      .channel('cart_items_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'cart_items',
+          filter: `cart_id=eq.${cartIdRef.current}`,
+        },
+        payload => {
+          // Fetch ulang count jika ada perubahan
+          supabase
+            .from('cart_items')
+            .select('id', { count: 'exact', head: true })
+            .eq('cart_id', cartIdRef.current)
+            .then(({ count }) => setCartCount(count || 0));
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [cartIdRef.current]);
+
+  // Helper untuk cek link aktif
+  const isActive = (href) => {
+    if (href === "/") return pathname === "/";
+    return pathname.startsWith(href);
+  };
 
   // --- Perubahan Kunci (Langkah 3) ---
   // Buat fungsi logout yang memanggil supabase
@@ -41,34 +106,44 @@ const Header = ({ isDarkMode, toggleDarkMode }) => {
         <nav className="hidden md:flex items-center space-x-8">
           <Link
             href="/"
-            className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-500 transition-colors"
+            className={`hover:text-blue-600 dark:hover:text-blue-500 transition-colors
+              ${isActive("/") ? "font-bold text-blue-600 dark:text-blue-400" : "text-gray-700 dark:text-gray-300"}`}
           >
             Home
           </Link>
           <Link
             href="/products"
-            className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-500 transition-colors"
+            className={`hover:text-blue-600 dark:hover:text-blue-500 transition-colors
+              ${isActive("/products") ? "font-bold text-blue-600 dark:text-blue-400" : "text-gray-700 dark:text-gray-300"}`}
           >
             Produk
           </Link>
           <Link
             href="/#testimonials"
-            className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-500 transition-colors"
+            className={`hover:text-blue-600 dark:hover:text-blue-500 transition-colors
+              ${pathname === "/#testimonials" ? "font-bold text-blue-600 dark:text-blue-400" : "text-gray-700 dark:text-gray-300"}`}
           >
             Testimoni
           </Link>
           <Link
-            href="/#faq"
-            className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-500 transition-colors"
+            href="/cart"
+            className={`hover:text-blue-600 dark:hover:text-blue-500 transition-colors flex items-center relative
+              ${isActive("/cart") ? "font-bold text-blue-600 dark:text-blue-400" : "text-gray-700 dark:text-gray-300"}`}
+            aria-label="Keranjang"
           >
-            FAQ
+            <ShoppingCart className="h-5 w-5" />
+            {cartCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5">
+                {cartCount}
+              </span>
+            )}
           </Link>
 
           {/* --- Perubahan Kunci (Langkah 4) --- */}
           {/* Gunakan variabel `session` dan `user` dari `useAuth` */}
           {session ? (
             <div className="relative group">
-              <button className="flex items-center space-x-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-500 transition-colors">
+              <button className="text-gray-700 dark:text-gray-300 flex items-center space-x-2 hover:text-blue-600 dark:hover:text-blue-500 transition-colors">
                 <User className="h-5 w-5" />
                 {/* Ambil nama dari tabel 'users', jika tidak ada, fallback ke email */}
                 <span>{user?.name || session.user.email}</span>
@@ -115,7 +190,7 @@ const Header = ({ isDarkMode, toggleDarkMode }) => {
           {/* Dark mode toggle */}
           {/* <button
             onClick={toggleDarkMode}
-            className="ml-4 p-2 rounded-full text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            className="ml-4 p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
           >
             {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
           </button> */}
@@ -125,7 +200,7 @@ const Header = ({ isDarkMode, toggleDarkMode }) => {
         <div className="md:hidden flex items-center">
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-500 focus:outline-none"
+            className="hover:text-blue-600 dark:hover:text-blue-500 focus:outline-none"
           >
             {menuOpen ? (
               <X className="h-6 w-6" />
@@ -141,27 +216,32 @@ const Header = ({ isDarkMode, toggleDarkMode }) => {
         <div className="md:hidden bg-white dark:bg-gray-900 px-6 pb-4">
           <Link
             href="/"
-            className="block py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-500"
+            className={`block py-2 hover:text-blue-600 dark:hover:text-blue-500
+              ${isActive("/") ? "font-bold text-blue-600 dark:text-blue-400" : "text-gray-700 dark:text-gray-300"}`}
           >
             Home
           </Link>
           <Link
             href="/products"
-            className="block py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-500"
+            className={`block py-2 hover:text-blue-600 dark:hover:text-blue-500
+              ${isActive("/products") ? "font-bold text-blue-600 dark:text-blue-400" : "text-gray-700 dark:text-gray-300"}`}
           >
             Produk
           </Link>
           <Link
             href="/#testimonials"
-            className="block py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-500"
+            className={`block py-2 hover:text-blue-600 dark:hover:text-blue-500
+              ${pathname === "/#testimonials" ? "font-bold text-blue-600 dark:text-blue-400" : "text-gray-700 dark:text-gray-300"}`}
           >
             Testimoni
           </Link>
           <Link
-            href="/#faq"
-            className="block py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-500"
+            href="/cart"
+            className={`hover:text-blue-600 dark:hover:text-blue-500 transition-colors flex items-center
+              ${isActive("/cart") ? "font-bold text-blue-600 dark:text-blue-400" : "text-gray-700 dark:text-gray-300"}`}
+            aria-label="Keranjang"
           >
-            FAQ
+            <ShoppingCart className="h-5 w-5" />
           </Link>
           {/* ... link lainnya ... */}
           <div className="border-t border-gray-200 dark:border-gray-700 mt-4 pt-4">
@@ -186,13 +266,13 @@ const Header = ({ isDarkMode, toggleDarkMode }) => {
               <>
                 <Link
                   href="/login"
-                  className="block py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-500"
+                  className="text-gray-700 dark:text-gray-300 block py-2 hover:text-blue-600 dark:hover:text-blue-500"
                 >
                   Login
                 </Link>
                 <Link
                   href="/signup"
-                  className="block py-2 text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-500"
+                  className="text-gray-700 dark:text-gray-300 block py-2 hover:text-blue-600 dark:hover:text-blue-500"
                 >
                   Daftar
                 </Link>
@@ -201,7 +281,7 @@ const Header = ({ isDarkMode, toggleDarkMode }) => {
           </div>
           {/* <button
             onClick={toggleDarkMode}
-            className="mt-4 p-2 rounded-full text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            className="mt-4 p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
           >
             {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
           </button> */}

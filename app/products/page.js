@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { supabase } from '../../lib/supabaseClient';
+import { supabase } from '@/lib/supabaseClient';
 
 const ProductsSection = () => {
   const [products, setProducts] = useState([]);
@@ -26,6 +26,53 @@ const ProductsSection = () => {
 
     fetchProducts();
   }, []);
+
+  const handleBuyNow = async (product) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      alert('Silakan login terlebih dahulu!');
+      return;
+    }
+
+    // Ambil atau buat cart user
+    let { data: cart } = await supabase
+      .from('carts')
+      .select('*')
+      .eq('user_id', user.id)
+      .single();
+
+    if (!cart) {
+      const { data: newCart } = await supabase
+        .from('carts')
+        .insert({ user_id: user.id })
+        .select()
+        .single();
+      cart = newCart;
+    }
+
+    // Cek apakah produk sudah ada di cart_items
+    const { data: existingItem } = await supabase
+      .from('cart_items')
+      .select('*')
+      .eq('cart_id', cart.id)
+      .eq('product_id', product.id)
+      .single();
+
+    if (existingItem) {
+      // Update quantity
+      await supabase
+        .from('cart_items')
+        .update({ quantity: existingItem.quantity + 1 })
+        .eq('id', existingItem.id);
+    } else {
+      // Insert baru
+      await supabase
+        .from('cart_items')
+        .insert({ cart_id: cart.id, product_id: product.id, quantity: 1 });
+    }
+
+    alert('Produk ditambahkan ke keranjang!');
+  };
 
   return (
     <section id="products" className="py-20 bg-slate-50 dark:bg-gray-900">
@@ -53,7 +100,10 @@ const ProductsSection = () => {
                     <span className="text-2xl font-bold text-blue-600 dark:text-blue-500">
                       Rp {Number(product.price).toLocaleString('id-ID')}
                     </span>
-                    <button className="bg-blue-500 text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors duration-300">
+                    <button
+                      onClick={() => handleBuyNow(product)}
+                      className="bg-blue-500 text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors duration-300"
+                    >
                       Beli Sekarang
                     </button>
                   </div>
