@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabaseClient';
+import { useRouter } from 'next/navigation';
 
 export default function CartPage() {
   const [cartItems, setCartItems] = useState([]);
@@ -89,6 +90,17 @@ export default function CartPage() {
   const selectedItems = cartItems.filter(item => item.selected);
   const total = selectedItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
+const router = useRouter();
+
+const handleCheckout = () => {
+  if (selectedItems.length > 0) {
+    // Mengubah array objek menjadi string JSON untuk dikirim via URL
+    const itemsJson = JSON.stringify(selectedItems);
+    router.push(`/checkout?items=${encodeURIComponent(itemsJson)}`);
+  }
+};
+  
+
   return (
     <section className="min-h-screen bg-slate-50 dark:bg-gray-900 py-12">
       <div className="container mx-auto px-4 flex flex-col md:flex-row gap-8">
@@ -111,6 +123,7 @@ export default function CartPage() {
           <button
             className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors sticky bottom-0"
             disabled={selectedItems.length === 0}
+            onClick={handleCheckout}
           >
             Checkout ({selectedItems.length})
           </button>

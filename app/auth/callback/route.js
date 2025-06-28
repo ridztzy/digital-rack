@@ -13,7 +13,9 @@ export async function GET(request) {
     const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
     
     try {
-      await supabase.auth.exchangeCodeForSession(code)
+      console.log('Menukar code untuk session:', code);
+      const result = await supabase.auth.exchangeCodeForSession(code);
+      console.log('Hasil exchangeCodeForSession:', result);
     } catch (error) {
       console.error('Error exchanging code for session:', error)
       return NextResponse.redirect(`${requestUrl.origin}/signup?error=auth_error`)

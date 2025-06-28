@@ -51,12 +51,12 @@ const ProductsSection = () => {
     }
 
     // Cek apakah produk sudah ada di cart_items
-    const { data: existingItem } = await supabase
+    const { data: existingItem, error: itemError } = await supabase
       .from('cart_items')
-      .select('*')
+      .select('id, quantity, cart_id, product_id')
       .eq('cart_id', cart.id)
       .eq('product_id', product.id)
-      .single();
+      .maybeSingle();
 
     if (existingItem) {
       // Update quantity

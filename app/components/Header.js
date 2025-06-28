@@ -119,11 +119,11 @@ const Header = ({ isDarkMode, toggleDarkMode }) => {
             Produk
           </Link>
           <Link
-            href="/#testimonials"
+            href="/transactions"
             className={`hover:text-blue-600 dark:hover:text-blue-500 transition-colors
-              ${pathname === "/#testimonials" ? "font-bold text-blue-600 dark:text-blue-400" : "text-gray-700 dark:text-gray-300"}`}
+              ${pathname === "/transactions" ? "font-bold text-blue-600 dark:text-blue-400" : "text-gray-700 dark:text-gray-300"}`}
           >
-            Testimoni
+            Transaksi
           </Link>
           <Link
             href="/cart"
@@ -229,11 +229,11 @@ const Header = ({ isDarkMode, toggleDarkMode }) => {
             Produk
           </Link>
           <Link
-            href="/#testimonials"
+            href="/transactions"
             className={`block py-2 hover:text-blue-600 dark:hover:text-blue-500
-              ${pathname === "/#testimonials" ? "font-bold text-blue-600 dark:text-blue-400" : "text-gray-700 dark:text-gray-300"}`}
+              ${pathname === "/transactions" ? "font-bold text-blue-600 dark:text-blue-400" : "text-gray-700 dark:text-gray-300"}`}
           >
-            Testimoni
+            Transaksi
           </Link>
           <Link
             href="/cart"
