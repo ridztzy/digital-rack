@@ -2,55 +2,49 @@
 
 import { useEffect, useState } from 'react';
 import { Search, Calendar, Filter, Eye, Download, CreditCard, Clock, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import { supabase } from '@/lib/supabaseClient';
 
-// Mock data untuk demo
-const mockTransactions = [
-  {
-    id: 1,
-    transaction_code: 'TRX-2024-001',
-    total_amount: 150000,
-    status: 'completed',
-    created_at: '2024-06-28T10:30:00Z',
-    payment_method: 'Bank Transfer',
-    items: ['Product A', 'Product B']
-  },
-  {
-    id: 2,
-    transaction_code: 'TRX-2024-002',
-    total_amount: 75000,
-    status: 'pending',
-    created_at: '2024-06-27T14:15:00Z',
-    payment_method: 'E-Wallet',
-    items: ['Product C']
-  },
-  {
-    id: 3,
-    transaction_code: 'TRX-2024-003',
-    total_amount: 320000,
-    status: 'failed',
-    created_at: '2024-06-26T09:45:00Z',
-    payment_method: 'Credit Card',
-    items: ['Product D', 'Product E', 'Product F']
-  },
-  {
-    id: 4,
-    transaction_code: 'TRX-2024-004',
-    total_amount: 89000,
-    status: 'completed',
-    created_at: '2024-06-25T16:20:00Z',
-    payment_method: 'Bank Transfer',
-    items: ['Product G']
-  }
-];
 
 export default function EnhancedUserTransactionsPage() {
-  const [transactions, setTransactions] = useState(mockTransactions);
-  const [filteredTransactions, setFilteredTransactions] = useState(mockTransactions);
+  const [transactions, setTransactions] = useState([]);
+  const [filteredTransactions, setFilteredTransactions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [dateFilter, setDateFilter] = useState('all');
+  const [selectedTrx, setSelectedTrx] = useState(null);
+
+  // Ambil data transaksi dari Supabase
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      setLoading(true);
+      setError('');
+      try {
+        // Ambil user yang sedang login
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          setError('Anda harus login untuk melihat riwayat transaksi.');
+          setLoading(false);
+          return;
+        }
+        // Ambil transaksi milik user
+        const { data, error } = await supabase
+          .from('transactions')
+          .select('*, transaction_items(*, products(name, file_url))')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        setTransactions(data || []);
+      } catch (err) {
+        setError('Gagal memuat riwayat transaksi.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTransactions();
+  }, []);
 
   // Filter transactions
   useEffect(() => {
@@ -140,6 +134,13 @@ export default function EnhancedUserTransactionsPage() {
   const completedCount = filteredTransactions.filter(trx => trx.status === 'completed').length;
   const pendingCount = filteredTransactions.filter(trx => trx.status === 'pending').length;
 
+  function mapStatus(status) {
+    if (status === 'success') return 'completed';
+    if (status === 'failed') return 'failed';
+    if (status === 'pending') return 'pending';
+    return status;
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-6">
       <div className="max-w-6xl mx-auto">
@@ -147,56 +148,9 @@ export default function EnhancedUserTransactionsPage() {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
             Riwayat Transaksi
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Kelola dan pantau semua transaksi Anda
-          </p>
+          </h1>     
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Berhasil</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {formatCurrency(totalAmount)}
-                </p>
-              </div>
-              <div className="w-12 h-12 bg-green-100 dark:bg-green-900/20 rounded-xl flex items-center justify-center">
-                <CreditCard className="w-6 h-6 text-green-600 dark:text-green-400" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Transaksi</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {filteredTransactions.length}
-                </p>
-              </div>
-              <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/20 rounded-xl flex items-center justify-center">
-                <CheckCircle className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Menunggu</p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {pendingCount}
-                </p>
-              </div>
-              <div className="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/20 rounded-xl flex items-center justify-center">
-                <Clock className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
-              </div>
-            </div>
-          </div>
-        </div>
 
         {/* Filters */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700 mb-8">
@@ -302,7 +256,7 @@ export default function EnhancedUserTransactionsPage() {
                             {trx.transaction_code}
                           </div>
                           <div className="text-sm text-gray-500 dark:text-gray-400">
-                            {trx.items.length} item{trx.items.length > 1 ? 's' : ''}
+                            {trx.transaction_items.length} item{trx.transaction_items.length > 1 ? 's' : ''}
                           </div>
                         </div>
                       </td>
@@ -312,10 +266,10 @@ export default function EnhancedUserTransactionsPage() {
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <span className={getStatusBadge(trx.status)}>
-                          {getStatusIcon(trx.status)}
-                          {trx.status === 'completed' ? 'Berhasil' : 
-                           trx.status === 'pending' ? 'Menunggu' : 'Gagal'}
+                        <span className={getStatusBadge(mapStatus(trx.status))}>
+                          {getStatusIcon(mapStatus(trx.status))}
+                          {mapStatus(trx.status) === 'completed' ? 'Berhasil' : 
+                           mapStatus(trx.status) === 'pending' ? 'Menunggu' : 'Gagal'}
                         </span>
                       </td>
                       <td className="px-6 py-4">
@@ -329,7 +283,10 @@ export default function EnhancedUserTransactionsPage() {
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <button className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1 text-sm font-medium transition-colors">
+                        <button
+                          onClick={() => setSelectedTrx(trx)}
+                          className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1 text-sm font-medium transition-colors"
+                        >
                           <Eye className="w-4 h-4" />
                           Detail
                         </button>
@@ -341,6 +298,52 @@ export default function EnhancedUserTransactionsPage() {
             </div>
           )}
         </div>
+
+        {/* Transaction Detail Modal */}
+        {selectedTrx && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+            <div className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl p-6 w-full max-w-2xl max-h-[90vh] flex flex-col relative text-gray-800 dark:text-gray-100 border border-gray-200 dark:border-gray-700 overflow-y-auto">
+              <button
+                onClick={() => setSelectedTrx(null)}
+                className="absolute top-4 right-4 text-gray-400 hover:text-red-500"
+                aria-label="Tutup"
+              >
+                <XCircle size={24} />
+              </button>
+              <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Detail Transaksi</h3>
+              <div className="mb-4 space-y-2">
+                <div><b>Kode:</b> <span className="font-mono text-blue-600 dark:text-blue-400">{selectedTrx.transaction_code}</span></div>
+                <div>
+                  <b>Status:</b> <span className={getStatusBadge(mapStatus(selectedTrx.status)) + " ml-1"}>{getStatusIcon(mapStatus(selectedTrx.status))}{mapStatus(selectedTrx.status) === 'completed' ? 'Berhasil' : mapStatus[selectedTrx.status] === 'pending' ? 'Menunggu' : 'Gagal'}</span>
+                </div>
+                <div><b>Total:</b> {formatCurrency(selectedTrx.total_amount)}</div>
+              </div>
+              <div>
+                <h4 className="font-semibold mb-2 text-gray-900 dark:text-white">Produk:</h4>
+                <ul className="space-y-4">
+                  {selectedTrx.transaction_items.map(item => (
+                    <li key={item.id} className="border-b border-gray-200 dark:border-gray-700 pb-2">
+                      <div className="font-medium text-gray-800 dark:text-gray-100">{item.products?.name || 'Produk Dihapus'}</div>
+                      {/* Download hanya jika status sukses dan file_url ada */}
+                      {(mapStatus(selectedTrx.status) === 'completed' || mapStatus(selectedTrx.status) === 'success') && item.products?.file_url && (
+                        <a
+                          href={item.products.file_url}
+                          download
+                          className="inline-flex items-center gap-2 mt-2 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold transition-colors"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <Download className="w-4 h-4" />
+                          Download File
+                        </a>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

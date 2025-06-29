@@ -294,7 +294,7 @@ export default function UsersPage() {
                     <div className="flex flex-col items-center">
                       <UserPlus size={48} className="mb-2 text-gray-300" />
                       <p>Belum ada pengguna.</p>
-                      <p className="text-sm">Klik "Tambah User" untuk memulai.</p>
+                      <p className="text-sm">Klik Tambah User untuk memulai.</p>
                     </div>
                   </td>
                 </tr>

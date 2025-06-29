@@ -215,7 +215,7 @@ export default function CategoriesPage() {
                     <div className="flex flex-col items-center">
                       <PlusCircle size={48} className="mb-2 text-gray-300" />
                       <p>Belum ada kategori.</p>
-                      <p className="text-sm">Klik "Tambah Kategori" untuk memulai.</p>
+                      <p className="text-sm">Klik Tambah Kategori untuk memulai.</p>
                     </div>
                   </td>
                 </tr>

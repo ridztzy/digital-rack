@@ -13,7 +13,7 @@ const TestimonialsSection = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {testimonials.map(testimonial => (
             <div key={testimonial.id} className="bg-slate-50 dark:bg-gray-900 p-8 rounded-lg shadow-sm">
-              <p className="text-gray-700 dark:text-gray-300 italic">"{testimonial.quote}"</p>
+              <p className="text-gray-700 dark:text-gray-300 italic">{testimonial.quote}</p>
               <div className="mt-6 flex items-center">
                 <img 
                   src={testimonial.avatarUrl} 

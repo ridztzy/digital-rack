@@ -17,6 +17,8 @@ const inter = Inter({ subsets: ['latin'] });
 export default function RootLayout({ children }) {
   const pathname = usePathname();
   const isAdmin = pathname.startsWith('/admin');
+  const isLogin = pathname === '/login';
+  const isSignup = pathname === '/signup';
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   // Efek untuk mengubah class 'dark' pada elemen <html>
@@ -28,21 +30,20 @@ export default function RootLayout({ children }) {
     }
   }, [isDarkMode]);
 
-  const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
-  };
+  const toggleDarkMode = () => setIsDarkMode(!isDarkMode);
 
   return (
     <html lang="en">
       <body className={`${inter.className} bg-white dark:bg-gray-900 transition-colors duration-300`}>
         {/* 2. BUNGKUS SEMUANYA DENGAN AuthProvider */}
         <AuthProvider>
-          {!isAdmin && <Header isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />}
-          
+          {/* Hanya tampilkan Header/Footer jika bukan admin & bukan login */}
+          {!isAdmin && !isLogin && !isSignup && <Header isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />}
           <main>
             <NextTopLoader color="#29D" showSpinner={false} />
-            {children}</main>
-          {!isAdmin && <Footer />}
+            {children}
+          </main>
+          {!isAdmin && !isLogin && !isSignup && <Footer />}
         </AuthProvider>
       </body>
     </html>

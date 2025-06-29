@@ -3,10 +3,12 @@
 
 import React, { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
+import { useRouter } from 'next/navigation';
 
 const ProductsSection = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -101,10 +103,10 @@ const ProductsSection = () => {
                       Rp {Number(product.price).toLocaleString('id-ID')}
                     </span>
                     <button
-                      onClick={() => handleBuyNow(product)}
-                      className="bg-blue-500 text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors duration-300"
+                      onClick={() => router.push(`/products/${product.slug}`)}
+                      className="bg-blue-500 text-white font-semibold px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors duration-300 cursor-pointer"
                     >
-                      Beli Sekarang
+                      Lihat Detail
                     </button>
                   </div>
                 </div>

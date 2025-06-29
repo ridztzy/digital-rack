@@ -386,7 +386,7 @@ export default function ProductsPage() {
                     <div className="flex flex-col items-center">
                       <PlusCircle size={48} className="mb-2 text-gray-300" />
                       <p>Belum ada produk.</p>
-                      <p className="text-sm">Klik "Tambah Produk" untuk memulai.</p>
+                      <p className="text-sm">Klik Tambah Produk untuk memulai.</p>
                     </div>
                   </td>
                 </tr>
