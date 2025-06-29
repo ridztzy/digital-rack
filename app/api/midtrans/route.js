@@ -124,7 +124,8 @@ export async function POST(request) {
 
     // 4. BUAT TRANSAKSI MIDTRANS (Kode Anda sudah benar)
     const snap = new midtransclient.Snap({
-        isProduction: process.env.NODE_ENV === 'production',
+      isProduction: false,
+        // process.env.NODE_ENV === 'production',
         serverKey: process.env.MIDTRANS_SERVER_KEY,
         clientKey: process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY
     });
