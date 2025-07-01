@@ -1,27 +1,23 @@
-// app/layout.js
-// Layout ini membungkus semua halaman. Cocok untuk menaruh Header, Footer, dan logic tema.
-"use client"; // Kita jadikan layout sebagai Client Component untuk mengelola state
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import { Inter } from 'next/font/google';
-import "./globals.css"; // Pastikan Anda memiliki file CSS global ini untuk Tailwind
+import "./globals.css";
 import { usePathname } from 'next/navigation';
 import NextTopLoader from 'nextjs-toploader';
 
-import Header from './components/Header';
-import Footer from './components/Footer';
-import { AuthProvider } from './context/AuthContext'; // <-- 1. IMPORT AuthProvider
+import Header from './components/layout/Header';
+import Footer from './components/layout/Footer';
+import { AuthProvider } from './context/AuthContext';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export default function RootLayout({ children }) {
   const pathname = usePathname();
   const isAdmin = pathname.startsWith('/admin');
-  const isLogin = pathname === '/login';
-  const isSignup = pathname === '/signup';
+  const isAuth = pathname === '/login' || pathname === '/signup' || pathname === '/reset-password';
   const [isDarkMode, setIsDarkMode] = useState(false);
 
-  // Efek untuk mengubah class 'dark' pada elemen <html>
   useEffect(() => {
     if (isDarkMode) {
       document.documentElement.classList.add('dark');
@@ -33,17 +29,17 @@ export default function RootLayout({ children }) {
   const toggleDarkMode = () => setIsDarkMode(!isDarkMode);
 
   return (
-    <html lang="en">
+    <html lang="id">
       <body className={`${inter.className} bg-white dark:bg-gray-900 transition-colors duration-300`}>
-        {/* 2. BUNGKUS SEMUANYA DENGAN AuthProvider */}
         <AuthProvider>
-          {/* Hanya tampilkan Header/Footer jika bukan admin & bukan login */}
-          {!isAdmin && !isLogin && !isSignup && <Header isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />}
-          <main>
-            <NextTopLoader color="#29D" showSpinner={false} />
+          <NextTopLoader color="#3B82F6" showSpinner={false} />
+          {!isAdmin && !isAuth && (
+            <Header isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
+          )}
+          <main className={!isAdmin && !isAuth ? 'min-h-screen' : ''}>
             {children}
           </main>
-          {!isAdmin && !isLogin && !isSignup && <Footer />}
+          {!isAdmin && !isAuth && <Footer />}
         </AuthProvider>
       </body>
     </html>

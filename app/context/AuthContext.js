@@ -1,76 +1,103 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabaseClient'; // Pastikan path ini benar
+import { supabase } from '@/lib/supabaseClient';
 
-// 1. Membuat Context
 const AuthContext = createContext();
 
-// 2. Membuat Provider Component
 export function AuthProvider({ children }) {
   const [session, setSession] = useState(null);
-  const [user, setUser] = useState(null); // Menyimpan data dari tabel 'users' kita
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setLoading(true);
-    // Coba ambil sesi yang sudah ada
+    // Get initial session
     const getInitialSession = async () => {
-        const { data: { session } } = await supabase.auth.getSession();
-        setSession(session);
-        if (session) {
-            const { data: userData } = await supabase
-                .from('users')
-                .select('*')
-                .eq('id', session.user.id)
-                .single();
-            setUser(userData);
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error('Error getting session:', error);
+          return;
         }
+
+        setSession(session);
+        
+        if (session?.user) {
+          // Fetch user profile
+          const { data: userData, error: userError } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+          
+          if (userError) {
+            console.error('Error fetching user profile:', userError);
+          } else {
+            setUser(userData);
+          }
+        }
+      } catch (error) {
+        console.error('Error in getInitialSession:', error);
+      } finally {
         setLoading(false);
+      }
     };
 
     getInitialSession();
 
-    // Dengarkan perubahan state autentikasi
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        console.log('Auth state changed:', event, session?.user?.id);
+        
         setSession(session);
-         if (session) {
-            const { data: userData } = await supabase
-                .from('users')
-                .select('*')
-                .eq('id', session.user.id)
-                .single();
-            setUser(userData);
-        } else {
+        
+        if (session?.user) {
+          // Fetch user profile
+          const { data: userData, error: userError } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+          
+          if (userError) {
+            console.error('Error fetching user profile:', userError);
             setUser(null);
+          } else {
+            setUser(userData);
+          }
+        } else {
+          setUser(null);
         }
+        
         setLoading(false);
       }
     );
 
-    // Bersihkan listener saat komponen unmount
     return () => {
-      authListener.subscription.unsubscribe();
+      subscription.unsubscribe();
     };
   }, []);
 
-  // Nilai yang akan disediakan untuk komponen anak
   const value = {
     session,
     user,
-    // Anda bisa menambahkan fungsi login/logout di sini jika mau
+    loading,
+    signOut: () => supabase.auth.signOut(),
   };
 
-  // Jangan render anak sebelum loading selesai untuk menghindari "flicker"
   return (
     <AuthContext.Provider value={value}>
-      {!loading && children}
+      {children}
     </AuthContext.Provider>
   );
 }
 
-// 3. Membuat Custom Hook untuk menggunakan context dengan mudah
 export const useAuth = () => {
-  return useContext(AuthContext);
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
 };

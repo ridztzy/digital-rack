@@ -1,26 +1,22 @@
-// app/page.js
-// Ini adalah halaman utama Anda.
-// Secara default, ini adalah Server Component, yang bagus untuk SEO dan performa.
 'use client';
 
+import React from 'react';
+import HeroSection from './components/sections/HeroSection';
+import FeaturesSection from './components/sections/FeaturesSection';
+import ProductsSection from './components/sections/ProductsSection';
+import TestimonialsSection from './components/sections/TestimonialsSection';
+import FaqSection from './components/sections/FaqSection';
+import CtaSection from './components/sections/CtaSection';
 
-import HeroSection from './components/HeroSection';
-import FeaturesSection from './components/FeaturesSection';
-import ProductsSection from './components/ProductsSection';
-import TestimonialsSection from './components/TestimonialsSection';
-import FaqSection from './components/FaqSection';
-import FinalCtaSection from './components/FinalCtaSection';
-
-export default function Home() {
+export default function HomePage() {
   return (
-    // Tag <main> dipindahkan ke layout.js agar lebih konsisten
     <>
       <HeroSection />
       <FeaturesSection />
       <ProductsSection />
       <TestimonialsSection />
       <FaqSection />
-      <FinalCtaSection />
+      <CtaSection />
     </>
   );
 }
