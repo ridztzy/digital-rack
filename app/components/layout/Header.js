@@ -143,12 +143,25 @@ const Header = ({ isDarkMode, toggleDarkMode }) => {
           {session ? (
             <div className="relative group">
               <button className="text-gray-700 dark:text-gray-300 flex items-center space-x-2 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                <User className="h-5 w-5" />
+                <div className="w-8 h-8 rounded-full overflow-hidden">
+                  <img
+                    src={user?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || session.user.email)}&size=32&background=3b82f6&color=ffffff`}
+                    alt="Avatar"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
                 <span className="font-medium">{user?.name || session.user.email}</span>
               </button>
               
               <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                 <div className="py-1">
+                  <Link
+                    href="/profile"
+                    className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  >
+                    <User className="h-4 w-4 mr-2" />
+                    Profil Saya
+                  </Link>
                   {user?.role === "admin" && (
                     <Link
                       href="/admin/dashboard"
@@ -247,9 +260,30 @@ const Header = ({ isDarkMode, toggleDarkMode }) => {
             <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
               {session ? (
                 <>
-                  <div className="text-sm text-gray-500 dark:text-gray-400 mb-2">
-                    {user?.name || session.user.email}
+                  <div className="flex items-center space-x-3 mb-4">
+                    <div className="w-10 h-10 rounded-full overflow-hidden">
+                      <img
+                        src={user?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || session.user.email)}&size=40&background=3b82f6&color=ffffff`}
+                        alt="Avatar"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium text-gray-900 dark:text-white">
+                        {user?.name || session.user.email}
+                      </div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">
+                        {session.user.email}
+                      </div>
+                    </div>
                   </div>
+                  <Link
+                    href="/profile"
+                    className="block py-2 text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    Profil Saya
+                  </Link>
                   {user?.role === "admin" && (
                     <Link
                       href="/admin/dashboard"
