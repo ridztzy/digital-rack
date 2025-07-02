@@ -2,17 +2,33 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { Menu, X, User, LogOut, Settings, Sun, Moon, ShoppingCart } from "lucide-react";
+import { Menu, X, User, LogOut, Settings, Sun, Moon, ShoppingCart, ChevronDown } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useAuth } from "../../context/AuthContext";
 import { supabase } from "@/lib/supabaseClient";
 
 const Header = ({ isDarkMode, toggleDarkMode }) => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const { session, user } = useAuth();
   const pathname = usePathname();
   const [cartCount, setCartCount] = useState(0);
   const cartIdRef = useRef(null);
+  const dropdownRef = useRef(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setProfileDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   // Fetch cart count
   useEffect(() => {
@@ -83,6 +99,7 @@ const Header = ({ isDarkMode, toggleDarkMode }) => {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
+    setProfileDropdownOpen(false);
     window.location.href = "/";
   };
 
@@ -141,8 +158,11 @@ const Header = ({ isDarkMode, toggleDarkMode }) => {
 
           {/* User Menu */}
           {session ? (
-            <div className="relative group">
-              <button className="text-gray-700 dark:text-gray-300 flex items-center space-x-2 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+            <div className="relative" ref={dropdownRef}>
+              <button 
+                onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+                className="text-gray-700 dark:text-gray-300 flex items-center space-x-2 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+              >
                 <div className="w-8 h-8 rounded-full overflow-hidden">
                   <img
                     src={user?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || session.user.email)}&size=32&background=3b82f6&color=ffffff`}
@@ -151,13 +171,15 @@ const Header = ({ isDarkMode, toggleDarkMode }) => {
                   />
                 </div>
                 <span className="font-medium">{user?.name || session.user.email}</span>
+                <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${profileDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
               
-              <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                <div className="py-1">
+              {profileDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-50">
                   <Link
                     href="/profile"
-                    className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    onClick={() => setProfileDropdownOpen(false)}
+                    className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                   >
                     <User className="h-4 w-4 mr-2" />
                     Profil Saya
@@ -165,21 +187,23 @@ const Header = ({ isDarkMode, toggleDarkMode }) => {
                   {user?.role === "admin" && (
                     <Link
                       href="/admin/dashboard"
-                      className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      onClick={() => setProfileDropdownOpen(false)}
+                      className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                     >
                       <Settings className="h-4 w-4 mr-2" />
                       Dashboard Admin
                     </Link>
                   )}
+                  <hr className="my-1 border-gray-200 dark:border-gray-600" />
                   <button
                     onClick={handleLogout}
-                    className="flex items-center w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    className="flex items-center w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                   >
                     <LogOut className="h-4 w-4 mr-2" />
                     Keluar
                   </button>
                 </div>
-              </div>
+              )}
             </div>
           ) : (
             <div className="flex items-center space-x-4">
