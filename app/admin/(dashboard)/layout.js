@@ -1,10 +1,9 @@
-// app/admin/(dashboard)/layout.js
-"use client"; // Menjadi Client Component untuk mengelola state (sidebar & dark mode)
+"use client";
 
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
-import { useAuth } from '@/app/context/AuthContext'; // pastikan path sesuai
+import { useAuth } from '@/app/context/AuthContext';
 import { useRouter } from 'next/navigation';
 
 export default function AdminDashboardLayout({ children }) {
@@ -14,15 +13,14 @@ export default function AdminDashboardLayout({ children }) {
     const router = useRouter();
 
     useEffect(() => {
-        if (loading) return; // Tunggu hingga loading selesai
+        if (loading) return;
         if (!session || !user) {
-            router.push('/login'); // redirect jika belum login
+            router.push('/login');
         } else if (user.role !== "admin") {
-            router.push('/'); // redirect jika bukan admin
+            router.push('/');
         }
     }, [session, user, loading, router]);
 
-    // Efek untuk mengelola class 'dark' pada HTML
     useEffect(() => {
         if (isDarkMode) {
             document.documentElement.classList.add('dark');
@@ -33,8 +31,23 @@ export default function AdminDashboardLayout({ children }) {
 
     const toggleDarkMode = () => setIsDarkMode(!isDarkMode);
 
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                    <p className="text-gray-600 dark:text-gray-400">Memuat admin panel...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (!session || !user || user.role !== "admin") {
+        return null;
+    }
+
     return (
-        <div className="bg-gray-100 dark:bg-gray-900 font-sans">
+        <div className="bg-gray-50 dark:bg-gray-900 font-sans min-h-screen">
             <Sidebar 
                 isOpen={isSidebarOpen} 
                 setIsOpen={setIsSidebarOpen}
@@ -45,8 +58,10 @@ export default function AdminDashboardLayout({ children }) {
                     isDarkMode={isDarkMode}
                     toggleDarkMode={toggleDarkMode}
                 />
-                <main className="flex-grow p-6">
-                    {children} 
+                <main className="flex-grow p-6 bg-gray-50 dark:bg-gray-900">
+                    <div className="max-w-7xl mx-auto">
+                        {children}
+                    </div>
                 </main>
             </div>
         </div>

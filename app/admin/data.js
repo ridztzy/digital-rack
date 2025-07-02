@@ -1,6 +1,3 @@
-// app/admin/data.js
-// Memusatkan semua mock data untuk panel admin di satu tempat.
-
 import { LayoutDashboard, Box, Tags, ShoppingCart, Users, Star, Image as ImageIcon, Settings } from 'lucide-react';
 
 export const stats = [
@@ -14,7 +11,7 @@ export const recentTransactions = [
     { id: "TRX001", user: "Budi Santoso", product: "Template Desain Pro", amount: "Rp 150.000", status: "Sukses" },
     { id: "TRX002", user: "Citra Lestari", product: "E-book AI", amount: "Rp 99.000", status: "Sukses" },
     { id: "TRX003", user: "Ahmad Dahlan", product: "Lisensi Analytic Pro", amount: "Rp 450.000", status: "Pending" },
-    { id: "TRX004", user: "Dewi Anjani", product: "Template Desain Pro", amount: "Rp 150.000", status: "Gagal" },
+    { id: "TRX004", user: "Dewi Anjani", product: "Template Design Pro", amount: "Rp 150.000", status: "Gagal" },
 ];
 
 export const products = [
@@ -25,12 +22,12 @@ export const products = [
 ];
 
 export const menuItems = [
-    { name: 'Dashboard', icon: <LayoutDashboard />, href: '/admin/dashboard' },
-    { name: 'Produk Digital', icon: <Box />, href: '/admin/products' },
-    { name: 'Kategori Produk', icon: <Tags />, href: '/admin/categories' },
-    { name: 'Transaksi', icon: <ShoppingCart />, href: '/admin/transactions' },
-    { name: 'Pengguna', icon: <Users />, href: '/admin/users' },
-    { name: 'Testimoni', icon: <Star />, href: '/admin/testimonials' },
-    { name: 'Banner / Hero', icon: <ImageIcon />, href: '/admin/banners' },
-    { name: 'Setting Website', icon: <Settings />, href: '/admin/settings' },
+    { name: 'Dashboard', icon: <LayoutDashboard size={20} />, href: '/admin/dashboard' },
+    { name: 'Produk Digital', icon: <Box size={20} />, href: '/admin/products' },
+    { name: 'Kategori Produk', icon: <Tags size={20} />, href: '/admin/categories' },
+    { name: 'Transaksi', icon: <ShoppingCart size={20} />, href: '/admin/transactions' },
+    { name: 'Pengguna', icon: <Users size={20} />, href: '/admin/users' },
+    { name: 'Testimoni', icon: <Star size={20} />, href: '/admin/testimonials' },
+    { name: 'Banner / Hero', icon: <ImageIcon size={20} />, href: '/admin/banners' },
+    { name: 'Pengaturan', icon: <Settings size={20} />, href: '/admin/settings' },
 ];
