@@ -1,44 +1,34 @@
 'use client';
 
 import React, { useEffect, useState, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
-import Link from 'next/link';
+import { CheckCircle, Clock, XCircle, Download, ArrowLeft, Package } from 'lucide-react';
+import Button from '../components/ui/Button';
+import Card from '../components/ui/Card';
 
-// Komponen untuk ikon (tidak ada perubahan)
 const StatusIcon = ({ status }) => {
-  // ... (kode ikon tetap sama)
-  if (status === 'success') {
-    return (
-      <svg className="w-16 h-16 text-green-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-      </svg>
-    );
+  switch (status) {
+    case 'success':
+      return <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />;
+    case 'pending':
+      return <Clock className="w-16 h-16 text-yellow-500 mx-auto mb-4" />;
+    case 'failed':
+      return <XCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />;
+    default:
+      return <Package className="w-16 h-16 text-gray-500 mx-auto mb-4" />;
   }
-  if (status === 'pending') {
-    return (
-      <svg className="w-16 h-16 text-yellow-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-      </svg>
-    );
-  }
-  return (
-    <svg className="w-16 h-16 text-red-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-    </svg>
-  );
 };
 
-// Komponen utama
 function OrderStatusContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const orderId = searchParams.get('order_id');
 
   const [transaction, setTransaction] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // 1. useEffect untuk mengambil data transaksi awal dan berlangganan perubahan realtime
   useEffect(() => {
     if (!orderId) {
       setError('Order ID tidak ditemukan di URL.');
@@ -46,7 +36,6 @@ function OrderStatusContent() {
       return;
     }
 
-    // Fungsi untuk mengambil data transaksi awal
     const fetchInitialTransaction = async () => {
       try {
         const { data, error: dbError } = await supabase
@@ -56,9 +45,10 @@ function OrderStatusContent() {
             transaction_items (
               quantity,
               price_at_purchase,
-              product:products (
+              products (
                 name,
-                file_url
+                file_url,
+                thumbnail_url
               )
             )
           `)
@@ -79,7 +69,7 @@ function OrderStatusContent() {
 
     fetchInitialTransaction();
 
-    // 2. Setup Supabase Realtime Subscription
+    // Setup Supabase Realtime Subscription
     const channel = supabase
       .channel(`transactions:${orderId}`)
       .on(
@@ -91,42 +81,63 @@ function OrderStatusContent() {
           filter: `transaction_code=eq.${orderId}`,
         },
         (payload) => {
-          // Ketika ada update, perbarui state dengan data baru
           setTransaction(prevTransaction => ({ ...prevTransaction, ...payload.new }));
         }
       )
       .subscribe();
 
-    // 3. Cleanup subscription saat komponen dilepas (unmount)
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [orderId]); // Hanya dijalankan ulang jika orderId berubah
+  }, [orderId]);
 
-  // Fungsi untuk mendapatkan informasi berdasarkan status dari state
   const getStatusInfo = () => {
-    const status = transaction?.status || 'pending'; // Ambil status dari state, default ke 'pending'
+    const status = transaction?.status || 'pending';
     switch (status) {
       case 'success':
         return {
           title: 'Pembayaran Berhasil!',
-          message: 'Terima kasih atas pembayaran Anda. Produk Anda sudah siap untuk diunduh.',
+          message: 'Terima kasih atas pembayaran Anda. Produk digital Anda sudah siap untuk diunduh.',
+          color: 'text-green-600',
+          bgColor: 'bg-green-50 dark:bg-green-900/20',
+          borderColor: 'border-green-200 dark:border-green-800'
         };
       case 'pending':
         return {
           title: 'Menunggu Pembayaran',
           message: 'Kami masih menunggu konfirmasi pembayaran Anda. Silakan selesaikan pembayaran. Halaman ini akan diperbarui secara otomatis.',
+          color: 'text-yellow-600',
+          bgColor: 'bg-yellow-50 dark:bg-yellow-900/20',
+          borderColor: 'border-yellow-200 dark:border-yellow-800'
         };
-      default: // failed, cancelled, etc.
+      default:
         return {
           title: 'Pembayaran Gagal',
-          message: 'Maaf, pembayaran Anda tidak berhasil atau dibatalkan. Silakan coba lagi.',
+          message: 'Maaf, pembayaran Anda tidak berhasil atau dibatalkan. Silakan coba lagi atau hubungi customer service.',
+          color: 'text-red-600',
+          bgColor: 'bg-red-50 dark:bg-red-900/20',
+          borderColor: 'border-red-200 dark:border-red-800'
         };
     }
   };
 
-  const statusInfo = getStatusInfo();
-  const currentStatus = transaction?.status || 'pending';
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0
+    }).format(amount);
+  };
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('id-ID', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
 
   if (loading) {
     return (
@@ -137,73 +148,204 @@ function OrderStatusContent() {
     );
   }
 
+  const statusInfo = getStatusInfo();
+  const currentStatus = transaction?.status || 'pending';
+
   return (
-    <div className="max-w-2xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
-      <StatusIcon status={currentStatus} />
-      <div className="text-center">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{statusInfo.title}</h1>
-        <p className="mt-2 text-gray-600 dark:text-gray-400">{statusInfo.message}</p>
-      </div>
-
-      {error && !transaction && (
-        <div className="mt-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-          <p>{error}</p>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+      <div className="container mx-auto px-4">
+        {/* Header */}
+        <div className="flex items-center space-x-4 mb-8">
+          <Button
+            variant="outline"
+            onClick={() => router.push('/products')}
+            className="flex items-center space-x-2"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>Kembali Belanja</span>
+          </Button>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Status Pesanan</h1>
         </div>
-      )}
 
-      {transaction && (
-        <div className="mt-8 border-t border-gray-200 dark:border-gray-700 pt-6">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Detail Pesanan</h2>
-          <div className="space-y-3 text-sm">
-            <div className="flex justify-between">
-              <span className="text-gray-500 dark:text-gray-400">Order ID:</span>
-              <span className="font-mono text-gray-800 dark:text-gray-200">{transaction.transaction_code}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-500 dark:text-gray-400">Total Pembayaran:</span>
-              <span className="font-bold text-blue-600 dark:text-blue-400">Rp{Number(transaction.total_amount).toLocaleString('id-ID')}</span>
-            </div>
+        <div className="max-w-2xl mx-auto">
+          {/* Status Card */}
+          <Card className={`p-8 text-center mb-8 border-2 ${statusInfo.borderColor} ${statusInfo.bgColor}`}>
+            <StatusIcon status={currentStatus} />
+            <h2 className={`text-2xl font-bold mb-2 ${statusInfo.color}`}>
+              {statusInfo.title}
+            </h2>
+            <p className="text-gray-600 dark:text-gray-300 mb-6">
+              {statusInfo.message}
+            </p>
+
+            {/* Auto-refresh indicator for pending status */}
+            {currentStatus === 'pending' && (
+              <div className="flex items-center justify-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-yellow-500"></div>
+                <span>Memantau status pembayaran...</span>
+              </div>
+            )}
+          </Card>
+
+          {/* Error Message */}
+          {error && !transaction && (
+            <Card className="p-6 mb-8">
+              <div className="text-center">
+                <XCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                  Terjadi Kesalahan
+                </h3>
+                <p className="text-red-600 dark:text-red-400 mb-4">{error}</p>
+                <Button onClick={() => router.push('/products')}>
+                  Kembali ke Produk
+                </Button>
+              </div>
+            </Card>
+          )}
+
+          {/* Transaction Details */}
+          {transaction && (
+            <Card className="p-6 mb-8">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                Detail Pesanan
+              </h3>
+              
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                <div>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">Order ID:</span>
+                  <p className="font-mono text-sm font-medium text-gray-900 dark:text-white">
+                    {transaction.transaction_code}
+                  </p>
+                </div>
+                <div>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">Total Pembayaran:</span>
+                  <p className="font-bold text-blue-600 dark:text-blue-400">
+                    {formatCurrency(transaction.total_amount)}
+                  </p>
+                </div>
+                <div>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">Metode Pembayaran:</span>
+                  <p className="font-medium text-gray-900 dark:text-white capitalize">
+                    {transaction.payment_method?.replace(/_/g, ' ') || '-'}
+                  </p>
+                </div>
+                <div>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">Tanggal Pesanan:</span>
+                  <p className="font-medium text-gray-900 dark:text-white">
+                    {formatDate(transaction.created_at)}
+                  </p>
+                </div>
+                {transaction.paid_at && (
+                  <div className="md:col-span-2">
+                    <span className="text-sm text-gray-500 dark:text-gray-400">Tanggal Pembayaran:</span>
+                    <p className="font-medium text-gray-900 dark:text-white">
+                      {formatDate(transaction.paid_at)}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Products List */}
+              <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+                <h4 className="font-semibold text-gray-900 dark:text-white mb-4">
+                  Produk yang Dibeli:
+                </h4>
+                <div className="space-y-4">
+                  {transaction.transaction_items.map((item, index) => (
+                    <div key={index} className="flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                      <img
+                        src={item.products?.thumbnail_url || 'https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80'}
+                        alt={item.products?.name}
+                        className="w-16 h-16 object-cover rounded-lg"
+                        onError={(e) => {
+                          e.target.src = 'https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80';
+                        }}
+                      />
+                      <div className="flex-1">
+                        <h5 className="font-medium text-gray-900 dark:text-white">
+                          {item.products?.name || 'Produk Dihapus'}
+                        </h5>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                          {item.quantity} × {formatCurrency(item.price_at_purchase)}
+                        </p>
+                      </div>
+                      {currentStatus === 'success' && item.products?.file_url && (
+                        <Button
+                          onClick={() => window.open(item.products.file_url, '_blank')}
+                          size="sm"
+                          className="flex items-center space-x-2"
+                        >
+                          <Download className="w-4 h-4" />
+                          <span>Download</span>
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </Card>
+          )}
+
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button
+              onClick={() => router.push('/products')}
+              variant="outline"
+              className="flex items-center space-x-2"
+            >
+              <Package className="w-4 h-4" />
+              <span>Lihat Produk Lainnya</span>
+            </Button>
+            
+            <Button
+              onClick={() => router.push('/transactions')}
+              className="flex items-center space-x-2"
+            >
+              <Clock className="w-4 h-4" />
+              <span>Riwayat Transaksi</span>
+            </Button>
           </div>
 
-          <div className="mt-6 border-t border-gray-200 dark:border-gray-700 pt-4">
-            <h3 className="font-semibold text-gray-900 dark:text-white mb-3">Produk yang Dibeli:</h3>
-            <ul className="space-y-2">
-              {transaction.transaction_items.map((item, index) => (
-                <li key={index} className="flex justify-between items-center text-sm">
-                  <span className="text-gray-600 dark:text-gray-300">{item.product.name} (x{item.quantity})</span>
-                  {currentStatus === 'success' && (
-                    <a href={item.product.file_url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline font-medium">
-                      Download
-                    </a>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </div>
+          {/* Help Section */}
+          <Card className="p-6 mt-8 text-center">
+            <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
+              Butuh Bantuan?
+            </h3>
+            <p className="text-gray-600 dark:text-gray-300 mb-4">
+              Jika Anda mengalami masalah dengan pesanan ini, jangan ragu untuk menghubungi tim support kami.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button
+                variant="outline"
+                onClick={() => window.open('mailto:support@digirack.com', '_blank')}
+              >
+                Email Support
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => window.open('https://wa.me/6281234567890', '_blank')}
+              >
+                WhatsApp
+              </Button>
+            </div>
+          </Card>
         </div>
-      )}
-
-      <div className="mt-10 text-center">
-        <Link href="/products" className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
-          Kembali Belanja
-        </Link>
       </div>
     </div>
   );
 }
 
-// Wrapper dengan Suspense (tidak ada perubahan)
 export default function OrderStatusPage() {
   return (
-    <section className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4">
-      <Suspense fallback={
-        <div className="text-center p-10">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600 dark:text-gray-400">Memuat halaman...</p>
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600 dark:text-gray-400">Memuat halaman...</p>
         </div>
-      }>
-        <OrderStatusContent />
-      </Suspense>
-    </section>
+      </div>
+    }>
+      <OrderStatusContent />
+    </Suspense>
   );
 }
