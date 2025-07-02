@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 import { CreditCard, Smartphone, Building, Store, ArrowLeft, Shield, CheckCircle } from 'lucide-react';
@@ -45,7 +45,7 @@ const useMidtransSnap = () => {
   return snapLoaded;
 };
 
-export default function CheckoutPage() {
+function CheckoutContent() {
   const snapLoaded = useMidtransSnap();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -505,5 +505,13 @@ export default function CheckoutPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function CheckoutPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Memuat checkout...</div>}>
+      <CheckoutContent />
+    </Suspense>
   );
 }

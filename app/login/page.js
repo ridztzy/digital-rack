@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 
@@ -348,7 +348,9 @@ export default function LoginPage() {
 
         {/* Form Container */}
         <div className="bg-white dark:bg-gray-800 shadow-2xl rounded-2xl p-8">
-          <LoginForm />
+          <Suspense fallback={<div>Loading...</div>}>
+            <LoginForm />
+          </Suspense>
           
           {/* Sign Up Link */}
           <div className="mt-6 text-center">

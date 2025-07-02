@@ -15,13 +15,14 @@ export default function CartPage() {
   const { session } = useAuth();
   const router = useRouter();
 
+  // Update the useEffect dependency array to include fetchCart
   useEffect(() => {
     if (session) {
       fetchCart();
     } else {
       setLoading(false);
     }
-  }, [session]);
+  }, [session, router, fetchCart]); // Add fetchCart to dependencies
 
   const fetchCart = async () => {
     try {

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Search, Filter, Grid, List, Star, Download, ShoppingCart, Eye } from 'lucide-react';
@@ -9,7 +9,8 @@ import LoadingSpinner from '../components/ui/LoadingSpinner';
 import Button from '../components/ui/Button';
 import { useAuth } from '../context/AuthContext';
 
-export default function ProductsPage() {
+// Create a client component that uses useSearchParams
+function ProductsContent() {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -458,5 +459,13 @@ export default function ProductsPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function ProductsPage() {
+  return(
+    <Suspense fallback={<LoadingSpinner size="lg" />}>
+      <ProductsContent />
+    </Suspense>
   );
 }

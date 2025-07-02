@@ -6,6 +6,7 @@ import { ArrowRight, Star, Download, Eye } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
 import LoadingSpinner from '../ui/LoadingSpinner';
 import Card from '../ui/Card';
+import Image from 'next/image';
 
 const ProductsSection = () => {
   const [products, setProducts] = useState([]);
@@ -105,13 +106,12 @@ const ProductsSection = () => {
               <Card key={product.id} className="group hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden">
                 {/* Product Image */}
                 <div className="relative overflow-hidden">
-                  <img
-                    src={product.thumbnail_url || 'https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'}
+                  <Image 
+                    src={product.imageUrl || 'https://placehold.co/600x400/3B82F6/FFFFFF?text=Product'} 
                     alt={product.name}
-                    className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                    onError={(e) => {
-                      e.target.src = 'https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
-                    }}
+                    width={600}
+                    height={400}
+                    className="w-full h-48 object-cover rounded-t-lg"
                   />
                   
                   {/* Category Badge */}

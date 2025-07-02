@@ -26,7 +26,7 @@ export function AuthProvider({ children }) {
         if (session?.user) {
           // Fetch user profile
           const { data: userData, error: userError } = await supabase
-            .from('profiles')
+            .from('users')
             .select('*')
             .eq('id', session.user.id)
             .single();
@@ -56,7 +56,7 @@ export function AuthProvider({ children }) {
         if (session?.user) {
           // Fetch user profile
           const { data: userData, error: userError } = await supabase
-            .from('profiles')
+            .from('users')
             .select('*')
             .eq('id', session.user.id)
             .single();

@@ -14,7 +14,7 @@ export default function ProfilePage() {
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [activeTab, setActiveTab] = useState('profile');
+  const [activeTab, setActiveTab] = useState('users');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
@@ -66,7 +66,7 @@ export default function ProfilePage() {
       
       // Fetch user profile from profiles table
       const { data: profile, error: profileError } = await supabase
-        .from('profiles')
+        .from('users')
         .select('*')
         .eq('id', session.user.id)
         .single();
@@ -134,7 +134,7 @@ export default function ProfilePage() {
     try {
       // Update profiles table
       const { error: profileError } = await supabase
-        .from('profiles')
+        .from('users')
         .upsert({
           id: session.user.id,
           ...profileForm,

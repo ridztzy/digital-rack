@@ -7,6 +7,9 @@ import { usePathname } from "next/navigation";
 import { useAuth } from "../../context/AuthContext";
 import { supabase } from "@/lib/supabaseClient";
 
+// Add this import at the top
+import Image from 'next/image';
+
 const Header = ({ isDarkMode, toggleDarkMode }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);

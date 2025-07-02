@@ -2,6 +2,7 @@
 import React from 'react';
 import { testimonials } from '../data/db'; // Import data
 
+
 const TestimonialsSection = () => {
   return (
     <section id="testimonials" className="py-20 bg-white dark:bg-gray-800">

@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { ArrowRight, Play, Star } from 'lucide-react';
+import Image from 'next/image';
 
 const HeroSection = () => {
   return (
@@ -108,3 +109,19 @@ const HeroSection = () => {
 };
 
 export default HeroSection;
+
+// Replace the img tag with Image component
+<div className="flex justify-center md:justify-end">
+  <Image 
+    src="/assets/hero-image.png" 
+    alt="Ilustrasi Produk Digital" 
+    width={800}
+    height={600}
+    className="rounded-lg shadow-2xl w-full max-w-md md:max-w-lg"
+    onError={(e) => { 
+      // Note: onError works differently with next/image
+      // This is a fallback approach
+      e.currentTarget.src = 'https://placehold.co/800x600/E0E7FF/1E40AF?text=Image+Error';
+    }}
+  />
+</div>
