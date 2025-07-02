@@ -1,5 +1,5 @@
 {
-  "name": "digirack2",
+  "name": "digiridz",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,14 +9,17 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@nivo/line": "^0.99.0",
     "@supabase/auth-helpers-nextjs": "^0.10.0",
     "@supabase/supabase-js": "^2.50.2",
+    "date-fns": "^4.1.0",
     "lucide-react": "^0.522.0",
     "midtrans-client": "^1.4.3",
     "next": "15.3.4",
     "nextjs-toploader": "^3.8.16",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "recharts": "^3.0.2"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

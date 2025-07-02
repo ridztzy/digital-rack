@@ -25,7 +25,7 @@ const FaqSection = () => {
     },
     {
       question: "Bagaimana jika saya butuh bantuan teknis?",
-      answer: "Tim customer support kami tersedia 24/7 melalui live chat, email (support@digirack.com), dan WhatsApp. Kami juga memiliki knowledge base lengkap dan video tutorial untuk membantu Anda memaksimalkan penggunaan produk digital yang dibeli."
+      answer: "Tim customer support kami tersedia 24/7 melalui live chat, email (support@digiridz.com), dan WhatsApp. Kami juga memiliki knowledge base lengkap dan video tutorial untuk membantu Anda memaksimalkan penggunaan produk digital yang dibeli."
     },
     {
       question: "Apakah produk akan mendapat update?",
@@ -98,7 +98,7 @@ const FaqSection = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
-              href="mailto:support@digirack.com"
+              href="mailto:support@digiridz.com"
               className="inline-flex items-center justify-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
             >
               Email Support

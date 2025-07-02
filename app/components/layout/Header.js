@@ -121,7 +121,7 @@ const Header = ({ isDarkMode, toggleDarkMode }) => {
             <span className="text-white font-bold text-sm">DR</span>
           </div>
           <span className="text-xl font-bold text-gray-900 dark:text-white">
-            DigiRack
+            DigiRidz
           </span>
         </Link>
 

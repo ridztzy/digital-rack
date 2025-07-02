@@ -681,7 +681,7 @@ export default function ProfilePage() {
                       {[
                         { id: 'order_updates', label: 'Update pesanan dan transaksi', description: 'Terima notifikasi tentang status pesanan Anda' },
                         { id: 'promotions', label: 'Promosi dan penawaran khusus', description: 'Dapatkan info tentang diskon dan produk baru' },
-                        { id: 'newsletter', label: 'Newsletter mingguan', description: 'Tips, tutorial, dan update dari DigiRack' },
+                        { id: 'newsletter', label: 'Newsletter mingguan', description: 'Tips, tutorial, dan update dari DigiRidz' },
                         { id: 'security', label: 'Notifikasi keamanan', description: 'Peringatan login dan aktivitas akun' }
                       ].map((item) => (
                         <div key={item.id} className="flex items-start space-x-3">

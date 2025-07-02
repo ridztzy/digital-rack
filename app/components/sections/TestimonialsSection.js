@@ -10,7 +10,7 @@ const TestimonialsSection = () => {
       role: "Graphic Designer",
       company: "Creative Studio",
       avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80",
-      content: "DigiRack benar-benar mengubah cara kerja saya. Template-template yang tersedia sangat berkualitas dan menghemat waktu saya hingga 70%. Highly recommended!",
+      content: "DigiRidz benar-benar mengubah cara kerja saya. Template-template yang tersedia sangat berkualitas dan menghemat waktu saya hingga 70%. Highly recommended!",
       rating: 5
     },
     {
@@ -19,7 +19,7 @@ const TestimonialsSection = () => {
       role: "Digital Marketer",
       company: "Marketing Pro",
       avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80",
-      content: "Sebagai digital marketer, saya butuh tools yang cepat dan efektif. E-book dan software dari DigiRack membantu saya meningkatkan conversion rate klien hingga 150%.",
+      content: "Sebagai digital marketer, saya butuh tools yang cepat dan efektif. E-book dan software dari DigiRidz membantu saya meningkatkan conversion rate klien hingga 150%.",
       rating: 5
     },
     {
@@ -28,7 +28,7 @@ const TestimonialsSection = () => {
       role: "Web Developer",
       company: "Tech Solutions",
       avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80",
-      content: "Plugin dan tools development yang ada di DigiRack sangat membantu project saya. Kualitasnya premium tapi harganya sangat terjangkau. Customer service juga responsif.",
+      content: "Plugin dan tools development yang ada di DigiRidz sangat membantu project saya. Kualitasnya premium tapi harganya sangat terjangkau. Customer service juga responsif.",
       rating: 5
     },
     {
@@ -37,7 +37,7 @@ const TestimonialsSection = () => {
       role: "Content Creator",
       company: "Creative Hub",
       avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80",
-      content: "Koleksi template dan asset di DigiRack sangat lengkap. Saya bisa membuat konten yang menarik dengan mudah. Platform ini wajib dimiliki setiap content creator!",
+      content: "Koleksi template dan asset di DigiRidz sangat lengkap. Saya bisa membuat konten yang menarik dengan mudah. Platform ini wajib dimiliki setiap content creator!",
       rating: 5
     }
   ];
@@ -51,7 +51,7 @@ const TestimonialsSection = () => {
             Apa Kata Pengguna Kami?
           </h2>
           <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            Ribuan profesional telah mempercayai DigiRack untuk mengembangkan bisnis mereka.
+            Ribuan profesional telah mempercayai DigiRidz untuk mengembangkan bisnis mereka.
             Simak testimoni mereka di bawah ini.
           </p>
         </div>

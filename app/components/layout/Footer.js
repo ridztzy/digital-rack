@@ -33,8 +33,8 @@ const Footer = () => {
   };
 
   const socialLinks = [
-    { icon: Instagram, href: 'https://instagram.com/digirack', label: 'Instagram' },
-    { icon: Linkedin, href: 'https://linkedin.com/company/digirack', label: 'LinkedIn' },
+    { icon: Instagram, href: 'https://instagram.com/digiridz', label: 'Instagram' },
+    { icon: Linkedin, href: 'https://linkedin.com/company/digiridz', label: 'LinkedIn' },
     { icon: MessageSquare, href: 'https://wa.me/6281234567890', label: 'WhatsApp' },
   ];
 
@@ -49,7 +49,7 @@ const Footer = () => {
               <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-blue-700 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-sm">DR</span>
               </div>
-              <span className="text-xl font-bold text-white">DigiRack</span>
+              <span className="text-xl font-bold text-white">DigiRidz</span>
             </div>
             <p className="text-gray-400 mb-4 leading-relaxed">
               Platform terpercaya untuk semua kebutuhan produk digital Anda. 
@@ -61,7 +61,7 @@ const Footer = () => {
             <div className="space-y-2 text-sm">
               <div className="flex items-center space-x-2">
                 <Mail className="w-4 h-4 text-blue-400" />
-                <span>support@digirack.com</span>
+                <span>support@digiridz.com</span>
               </div>
               <div className="flex items-center space-x-2">
                 <Phone className="w-4 h-4 text-blue-400" />
@@ -166,7 +166,7 @@ const Footer = () => {
         {/* Bottom Footer */}
         <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
           <div className="text-gray-500 text-sm mb-4 md:mb-0">
-            <p>&copy; {currentYear} DigiRack. Semua hak dilindungi.</p>
+            <p>&copy; {currentYear} DigiRidz. Semua hak dilindungi.</p>
           </div>
 
           {/* Social Links */}

@@ -38,7 +38,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                         <div className="w-8 h-8 bg-gradient-to-r from-blue-400 to-blue-600 rounded-lg flex items-center justify-center">
                             <span className="text-white font-bold text-sm">DR</span>
                         </div>
-                        <h1 className="text-xl font-bold">DigiRack Admin</h1>
+                        <h1 className="text-xl font-bold">DigiRidz Admin</h1>
                     </div>
                     <button
                         onClick={() => setIsOpen(false)}

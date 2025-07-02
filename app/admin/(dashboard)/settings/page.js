@@ -202,7 +202,7 @@ export default function SettingsPage() {
                     value={settings.site_name}
                     onChange={handleChange}
                     className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="DigiRack"
+                    placeholder="DigiRidz"
                   />
                 </div>
                 <div>
@@ -264,7 +264,7 @@ export default function SettingsPage() {
                       value={settings.contact_email}
                       onChange={handleChange}
                       className="w-full pl-10 pr-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="support@digirack.com"
+                      placeholder="support@DigiRidz.com"
                     />
                   </div>
                 </div>
@@ -320,7 +320,7 @@ export default function SettingsPage() {
                       value={settings.social_facebook}
                       onChange={handleChange}
                       className="w-full pl-10 pr-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="https://facebook.com/digirack"
+                      placeholder="https://facebook.com/DigiRidz"
                     />
                   </div>
                 </div>
@@ -336,7 +336,7 @@ export default function SettingsPage() {
                       value={settings.social_instagram}
                       onChange={handleChange}
                       className="w-full pl-10 pr-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="https://instagram.com/digirack"
+                      placeholder="https://instagram.com/DigiRidz"
                     />
                   </div>
                 </div>
@@ -352,7 +352,7 @@ export default function SettingsPage() {
                       value={settings.social_twitter}
                       onChange={handleChange}
                       className="w-full pl-10 pr-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="https://twitter.com/digirack"
+                      placeholder="https://twitter.com/DigiRidz"
                     />
                   </div>
                 </div>
@@ -368,7 +368,7 @@ export default function SettingsPage() {
                       value={settings.social_linkedin}
                       onChange={handleChange}
                       className="w-full pl-10 pr-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="https://linkedin.com/company/digirack"
+                      placeholder="https://linkedin.com/company/DigiRidz"
                     />
                   </div>
                 </div>

@@ -59,7 +59,7 @@ const FeaturesSection = () => {
         {/* Header */}
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-            Mengapa Memilih DigiRack?
+            Mengapa Memilih DigiRidz?
           </h2>
           <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
             Kami berkomitmen memberikan pengalaman terbaik dalam berbelanja produk digital

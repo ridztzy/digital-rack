@@ -317,7 +317,7 @@ function OrderStatusContent() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
                 variant="outline"
-                onClick={() => window.open('mailto:support@digirack.com', '_blank')}
+                onClick={() => window.open('mailto:support@digiridz.com', '_blank')}
               >
                 Email Support
               </Button>

@@ -28,7 +28,7 @@ const CtaSection = () => {
 
           {/* Description */}
           <p className="text-lg md:text-xl text-blue-100 mb-8 leading-relaxed max-w-2xl mx-auto">
-            Bergabunglah dengan ribuan profesional yang telah mempercayai DigiRack 
+            Bergabunglah dengan ribuan profesional yang telah mempercayai DigiRidz 
             untuk mendapatkan produk digital berkualitas tinggi dan mengembangkan bisnis mereka.
           </p>
 
