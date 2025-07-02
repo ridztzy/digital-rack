@@ -5,7 +5,12 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   images: {
-    domains: ['placehold.co', 'images.unsplash.com', 'i.pravatar.cc'],
+    domains: [
+      'placehold.co',
+      'images.unsplash.com',
+      'i.pravatar.cc',
+      'rmtqrojuwbwgsaaiaxcf.supabase.co' // tambahkan domain ini
+    ],
   },
 };
 

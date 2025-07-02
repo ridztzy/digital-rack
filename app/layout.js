@@ -9,6 +9,7 @@ import NextTopLoader from 'nextjs-toploader';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
 import { AuthProvider } from './context/AuthContext';
+import { ToastProvider } from './components/ui/Toast';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -32,14 +33,16 @@ export default function RootLayout({ children }) {
     <html lang="id">
       <body className={`${inter.className} bg-white dark:bg-gray-900 transition-colors duration-300`}>
         <AuthProvider>
-          <NextTopLoader color="#3B82F6" showSpinner={false} />
-          {!isAdmin && !isAuth && (
-            <Header isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
-          )}
-          <main className={!isAdmin && !isAuth ? 'min-h-screen' : ''}>
-            {children}
-          </main>
-          {!isAdmin && !isAuth && <Footer />}
+          <ToastProvider>
+            <NextTopLoader color="#3B82F6" showSpinner={false} />
+            {!isAdmin && !isAuth && (
+              <Header isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
+            )}
+            <main className={!isAdmin && !isAuth ? 'min-h-screen' : ''}>
+              {children}
+            </main>
+            {!isAdmin && !isAuth && <Footer />}
+          </ToastProvider>
         </AuthProvider>
       </body>
     </html>

@@ -8,6 +8,7 @@ import Card from '../components/ui/Card';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import Button from '../components/ui/Button';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../components/ui/Toast';
 
 // Create a client component that uses useSearchParams
 function ProductsContent() {
@@ -25,7 +26,8 @@ function ProductsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { session } = useAuth();
-  
+  const toast = useToast();
+
   const ITEMS_PER_PAGE = 12;
 
   useEffect(() => {
@@ -152,10 +154,10 @@ function ProductsContent() {
       }
 
       // Show success message (you can implement toast here)
-      alert('Produk berhasil ditambahkan ke keranjang!');
+      toast.success('Produk berhasil ditambahkan ke keranjang!');
     } catch (error) {
       console.error('Error adding to cart:', error);
-      alert('Gagal menambahkan produk ke keranjang');
+      toast.error('Gagal menambahkan produk ke keranjang');
     }
   };
 
@@ -168,7 +170,7 @@ function ProductsContent() {
   };
 
   const ProductCard = ({ product }) => (
-    <Card className="group hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden">
+    <Card className="group hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden h-full flex flex-col">
       <div className="relative overflow-hidden">
         <img
           src={product.thumbnail_url || 'https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'}
@@ -178,7 +180,6 @@ function ProductsContent() {
             e.target.src = 'https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
           }}
         />
-        
         {product.categories && (
           <div className="absolute top-3 left-3">
             <span className="px-2 py-1 bg-blue-600 text-white text-xs font-medium rounded-full">
@@ -186,7 +187,6 @@ function ProductsContent() {
             </span>
           </div>
         )}
-
         <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           <div className="flex space-x-2">
             <button 
@@ -198,8 +198,7 @@ function ProductsContent() {
           </div>
         </div>
       </div>
-
-      <Card.Content className="p-6">
+      <Card.Content className="flex-1 flex flex-col p-6">
         <div className="mb-4">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2">
             {product.name}
@@ -208,7 +207,6 @@ function ProductsContent() {
             {product.description}
           </p>
         </div>
-
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-1">
             <Star className="w-4 h-4 text-yellow-400 fill-current" />
@@ -220,13 +218,10 @@ function ProductsContent() {
             <span className="text-sm">2.1k</span>
           </div>
         </div>
-
-        <div className="flex items-center justify-between">
-          <div>
-            <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-              {formatCurrency(product.price)}
-            </span>
-          </div>
+        <div className="flex flex-col gap-2 mt-auto">
+          <span className="text-2xl font-bold text-blue-600 dark:text-blue-400 break-words">
+            {formatCurrency(product.price)}
+          </span>
           <div className="flex space-x-2">
             <Button
               onClick={() => handleAddToCart(product)}

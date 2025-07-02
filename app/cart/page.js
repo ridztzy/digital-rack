@@ -15,15 +15,6 @@ export default function CartPage() {
   const { session } = useAuth();
   const router = useRouter();
 
-  // Update the useEffect dependency array to include fetchCart
-  useEffect(() => {
-    if (session) {
-      fetchCart();
-    } else {
-      setLoading(false);
-    }
-  }, [session, router, fetchCart]); // Add fetchCart to dependencies
-
   const fetchCart = async () => {
     try {
       const { data: cart } = await supabase
@@ -69,6 +60,14 @@ export default function CartPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (session) {
+      fetchCart();
+    } else {
+      setLoading(false);
+    }
+  }, [session, router]); // Hapus fetchCart dari dependencies
 
   const handleQuantityChange = async (id, newQuantity) => {
     if (newQuantity < 1) return;

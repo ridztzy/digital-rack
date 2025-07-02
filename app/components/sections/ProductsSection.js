@@ -1,33 +1,33 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { ArrowRight, Star, Download, Eye } from 'lucide-react';
-import { supabase } from '@/lib/supabaseClient';
-import LoadingSpinner from '../ui/LoadingSpinner';
-import Card from '../ui/Card';
-import Image from 'next/image';
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
+import { ArrowRight, Star, Download, Eye } from "lucide-react";
+import { supabase } from "@/lib/supabaseClient";
+import LoadingSpinner from "../ui/LoadingSpinner";
+import Card from "../ui/Card";
+import Image from "next/image";
 
 const ProductsSection = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const { data, error } = await supabase
-          .from('products')
-          .select('*, categories(name)')
-          .eq('status', 'active')
-          .order('created_at', { ascending: false })
+          .from("products")
+          .select("*, categories(name)")
+          .eq("status", "active")
+          .order("created_at", { ascending: false })
           .limit(6);
 
         if (error) throw error;
         setProducts(data || []);
       } catch (err) {
-        console.error('Error fetching products:', err);
-        setError('Gagal memuat produk');
+        console.error("Error fetching products:", err);
+        setError("Gagal memuat produk");
       } finally {
         setLoading(false);
       }
@@ -37,10 +37,10 @@ const ProductsSection = () => {
   }, []);
 
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      minimumFractionDigits: 0
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0,
     }).format(amount);
   };
 
@@ -50,7 +50,9 @@ const ProductsSection = () => {
         <div className="container mx-auto px-4">
           <div className="text-center">
             <LoadingSpinner size="lg" />
-            <p className="mt-4 text-gray-600 dark:text-gray-400">Memuat produk...</p>
+            <p className="mt-4 text-gray-600 dark:text-gray-400">
+              Memuat produk...
+            </p>
           </div>
         </div>
       </section>
@@ -78,42 +80,56 @@ const ProductsSection = () => {
             Produk Digital Terpopuler
           </h2>
           <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mb-8">
-            Temukan produk digital berkualitas tinggi yang telah dipercaya oleh ribuan pengguna
-            untuk mengembangkan bisnis dan proyek mereka.
+            Temukan produk digital berkualitas tinggi yang telah dipercaya oleh
+            ribuan pengguna untuk mengembangkan bisnis dan proyek mereka.
           </p>
-          
+
           {/* Category Filters */}
           <div className="flex flex-wrap justify-center gap-2">
-            {['Semua', 'Template', 'E-book', 'Software', 'Plugin'].map((category) => (
-              <button
-                key={category}
-                className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-white dark:hover:bg-gray-700 rounded-lg transition-colors"
-              >
-                {category}
-              </button>
-            ))}
+            {["Semua", "Template", "E-book", "Software", "Plugin"].map(
+              (category) => (
+                <button
+                  key={category}
+                  className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-white dark:hover:bg-gray-700 rounded-lg transition-colors"
+                >
+                  {category}
+                </button>
+              )
+            )}
           </div>
         </div>
 
         {/* Products Grid */}
         {products.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-gray-600 dark:text-gray-400">Belum ada produk tersedia.</p>
+            <p className="text-gray-600 dark:text-gray-400">
+              Belum ada produk tersedia.
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
             {products.map((product) => (
-              <Card key={product.id} className="group hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden">
+              <Card
+                key={product.id}
+                className="group hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 overflow-hidden"
+              >
                 {/* Product Image */}
                 <div className="relative overflow-hidden">
-                  <Image 
-                    src={product.imageUrl || 'https://placehold.co/600x400/3B82F6/FFFFFF?text=Product'} 
+                  <img
+                    src={
+                      product.thumbnail_url ||
+                      "https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80"
+                    }
                     alt={product.name}
                     width={600}
                     height={400}
                     className="w-full h-48 object-cover rounded-t-lg"
+                    onError={(e) => {
+                      e.target.src =
+                        "https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=80";
+                    }}
                   />
-                  
+
                   {/* Category Badge */}
                   {product.categories && (
                     <div className="absolute top-3 left-3">
@@ -148,8 +164,12 @@ const ProductsSection = () => {
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center space-x-1">
                       <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">4.8</span>
-                      <span className="text-sm text-gray-500 dark:text-gray-400">(124)</span>
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        4.8
+                      </span>
+                      <span className="text-sm text-gray-500 dark:text-gray-400">
+                        (124)
+                      </span>
                     </div>
                     <div className="flex items-center space-x-1 text-gray-500 dark:text-gray-400">
                       <Download className="w-4 h-4" />
